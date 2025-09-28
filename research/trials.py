@@ -20,7 +20,7 @@ def load_pdf(data_dir):
 extracted_data = load_pdf("data/")
 print(f"Extracted {len(extracted_data)} pages from PDF.")
 
-# Step 2: Split text into chunks
+#Split text into chunks
 def text_split(extracted_data):
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=20)
     text_chunks = text_splitter.split_documents(extracted_data)
@@ -29,7 +29,7 @@ def text_split(extracted_data):
 text_chunks = text_split(extracted_data)
 print(f"Split into {len(text_chunks)} chunks.")
 
-# Step 3: Download embedding model
+#Download embedding model
 def download_hugging_face_embeddings():
     embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
     return embeddings
@@ -40,16 +40,16 @@ embeddings = download_hugging_face_embeddings()
 query_result = embeddings.embed_query("Hello world")
 print(f"Embedding length: {len(query_result)}")
 
-# Step 4: Initialize Pinecone
+#Initialize Pinecone
 pinecone.init(api_key=PINECONE_API_KEY, environment=PINECONE_API_ENV)
 
 index_name = "medical-chatbot"  # Ensure this index is created in Pinecone dashboard
 
-# Step 5: Create embeddings and store in Pinecone
+#Create embeddings and store in Pinecone
 docsearch = Pinecone.from_texts([t.page_content for t in text_chunks], embeddings, index_name=index_name)
 print("Embeddings stored in Pinecone.")
 
-# Step 6: Query the vector store (example)
+#Query the vector store (example)
 query = "What is the treatment for fever?"
 docs = docsearch.similarity_search(query, k=3)
 print(docs)
